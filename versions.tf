@@ -1,9 +1,18 @@
-# TF version and required providers go here
 terraform {
-  # Defining a required TF version is recommended
-  # required_version = ">= 1.9.0"
+  required_version = ">= 1.11.0"
 
   required_providers {
-    # ...
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 3"
+    }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 5"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3"
+    }
   }
 }
