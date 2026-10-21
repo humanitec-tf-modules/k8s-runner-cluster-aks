@@ -22,6 +22,10 @@ output "separate_runner_cluster_rolebinding_name" {
   description = "Name of the Kubernetes rolebinding created if `is_separate_runner_cluster` is `true`. Returns `null` otherwise."
   value       = module.k8s_runner_cluster.separate_runner_cluster_rolebinding_name
 }
+output "separate_runner_cluster_rolebinding_subjects" {
+  description = "Subjects of the Kubernetes rolebinding created if `is_separate_runner_cluster` is `true`, including any attributes filled in by the provider. Returns `null` otherwise."
+  value       = module.k8s_runner_cluster.separate_runner_cluster_rolebinding_subjects
+}
 output "managed_identity_id" {
   value       = local.managed_identity_id
   description = "Resource ID of the managed identity used by the runner"

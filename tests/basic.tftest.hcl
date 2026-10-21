@@ -114,8 +114,12 @@ run "defaults" {
     error_message = "Kubernetes namespace, service account, role and rolebinding outputs should use the default names"
   }
   assert {
-    condition     = output.separate_runner_cluster_role_name == null && output.separate_runner_cluster_rolebinding_name == null
-    error_message = "Separate runner cluster role and rolebinding outputs should be null by default"
+    condition = (
+      output.separate_runner_cluster_role_name == null &&
+      output.separate_runner_cluster_rolebinding_name == null &&
+      output.separate_runner_cluster_rolebinding_subjects == null
+    )
+    error_message = "Separate runner cluster role, rolebinding and subjects outputs should be null by default"
   }
   assert {
     condition = (
@@ -168,12 +172,28 @@ run "complete_create_identity" {
   command = apply
 
   variables {
-    runner_namespace                     = "platform-runner"
-    runner_serviceaccount                = "runner-sa"
-    runner_serviceaccount_annotations    = { "example.com/team" = "platform" }
-    runner_role                          = "runner-role"
-    support_kubernetes_tf_backend        = true
-    is_separate_runner_cluster           = true
+    runner_namespace                  = "platform-runner"
+    runner_serviceaccount             = "runner-sa"
+    runner_serviceaccount_annotations = { "example.com/team" = "platform" }
+    runner_role                       = "runner-role"
+    support_kubernetes_tf_backend     = true
+    is_separate_runner_cluster        = true
+    separate_runner_cluster_subjects = [
+      {
+        kind      = "ServiceAccount"
+        name      = "my-serviceaccount"
+        namespace = "my-namespace"
+      },
+      {
+        kind      = "Group"
+        name      = "my-group"
+        api_group = "rbac.authorization.k8s.io"
+      },
+      {
+        kind = "User"
+        name = "my-user"
+      },
+    ]
     managed_identity_create              = true
     managed_identity_name                = "my-identity"
     managed_identity_resource_group_name = "my-rg"
@@ -229,6 +249,22 @@ run "complete_create_identity" {
   assert {
     condition     = output.separate_runner_cluster_role_name == "runner-role-jobs" && output.separate_runner_cluster_rolebinding_name == "runner-role-jobs"
     error_message = "Separate runner cluster role and rolebinding should be created if is_separate_runner_cluster is true"
+  }
+  assert {
+    condition = [for s in output.separate_runner_cluster_rolebinding_subjects : { kind = s.kind, name = s.name }] == [
+      { kind = "ServiceAccount", name = "my-serviceaccount" },
+      { kind = "Group", name = "my-group" },
+      { kind = "User", name = "my-user" },
+    ]
+    error_message = "Separate runner cluster rolebinding should bind exactly the separate_runner_cluster_subjects, in order"
+  }
+  assert {
+    condition     = output.separate_runner_cluster_rolebinding_subjects[0].namespace == "my-namespace"
+    error_message = "Separate runner cluster rolebinding should pass on the namespace of a subject"
+  }
+  assert {
+    condition     = output.separate_runner_cluster_rolebinding_subjects[1].api_group == "rbac.authorization.k8s.io"
+    error_message = "Separate runner cluster rolebinding should pass on the api_group of a subject"
   }
   assert {
     condition     = output.managed_identity_name == "my-identity"
@@ -461,6 +497,16 @@ run "rejects_client_id_annotation" {
   }
 
   expect_failures = [var.runner_serviceaccount_annotations]
+}
+
+run "separate_runner_cluster_requires_subjects" {
+  command = plan
+
+  variables {
+    is_separate_runner_cluster = true
+  }
+
+  expect_failures = [var.separate_runner_cluster_subjects]
 }
 
 run "create_identity_requires_resource_group" {

@@ -101,10 +101,12 @@ module "k8s_runner_cluster" {
   runner_serviceaccount         = var.runner_serviceaccount
   runner_role                   = var.runner_role
   support_kubernetes_tf_backend = var.support_kubernetes_tf_backend
-  is_separate_runner_cluster    = var.is_separate_runner_cluster
   # Annotate the driver service account for Workload Identity and also add any annotations passed in
   runner_serviceaccount_annotations = merge(
     var.runner_serviceaccount_annotations,
     { "azure.workload.identity/client-id" = local.managed_identity_client_id }
   )
+  # Handling for separate runner cluster
+  is_separate_runner_cluster       = var.is_separate_runner_cluster
+  separate_runner_cluster_subjects = var.separate_runner_cluster_subjects
 }
