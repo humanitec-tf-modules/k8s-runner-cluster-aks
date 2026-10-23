@@ -17,6 +17,7 @@ When the runner cluster is also an Operator cluster, you can use all defaults an
 module "my_aks_runner_cluster" {
   source = "github.com/humanitec-tf-modules/k8s-runner-cluster-aks?ref=vX.Y.Z"
   providers = {
+    azurerm    = azurerm
     kubernetes = kubernetes
   }
 
@@ -43,6 +44,7 @@ resource "azurerm_role_assignment" "cloud_account_mi_storage_account_contributor
 module "my_aks_runner_cluster" {
   source = "github.com/humanitec-tf-modules/k8s-runner-cluster-aks?ref=vX.Y.Z"
   providers = {
+    azurerm    = azurerm
     kubernetes = kubernetes
   }
 
@@ -68,6 +70,7 @@ This configuration sets up your own Azure managed identity as the runner identit
 module "my_aks_runner_cluster" {
   source = "github.com/humanitec-tf-modules/k8s-runner-cluster-aks?ref=vX.Y.Z"
   providers = {
+    azurerm    = azurerm
     kubernetes = kubernetes
   }
 
@@ -86,6 +89,7 @@ This configuration sets up the required permissions on the Kubernetes cluster to
 module "my_aks_runner_cluster" {
   source = "github.com/humanitec-tf-modules/k8s-runner-cluster-aks?ref=vX.Y.Z"
   providers = {
+    azurerm    = azurerm
     kubernetes = kubernetes
   }
 
