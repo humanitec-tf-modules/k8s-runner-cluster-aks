@@ -247,7 +247,7 @@ run "complete_create_identity" {
     error_message = "Kubernetes namespace, service account, role and rolebinding outputs should use the custom names"
   }
   assert {
-    condition     = output.separate_runner_cluster_role_name == "runner-role-jobs" && output.separate_runner_cluster_rolebinding_name == "runner-role-jobs"
+    condition     = output.separate_runner_cluster_role_name == "runner-role-separate-cluster" && output.separate_runner_cluster_rolebinding_name == "runner-role-separate-cluster"
     error_message = "Separate runner cluster role and rolebinding should be created if is_separate_runner_cluster is true"
   }
   assert {
