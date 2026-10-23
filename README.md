@@ -1,7 +1,107 @@
 # AKS Kubernetes runner cluster
 
+This repository contains an OpenTofu/Terraform module to set up an Azure Kubernetes Service (AKS) cluster as a runner cluster for the [Container (builtin)](https://developer.humanitec.com/platform-orchestrator/docs/integration-and-extensions/drivers/container-builtin/) Driver and Drivers based on it such as the [Terraform and OpenTofu Container (builtin)](https://developer.humanitec.com/platform-orchestrator/docs/integration-and-extensions/drivers/terraform-and-opentofu-container-builtin/) Driver.
+
 > [!NOTE]
-> 🚧 The content of this repository is currently being curated. Please wait for the first release to appear before using it.
+> The module does not support the setup of the non-built-in Drivers, including the [Container Runner](https://developer.humanitec.com/platform-orchestrator/docs/integration-and-extensions/drivers/generic-drivers/container-runner/), [Terraform Runner](https://developer.humanitec.com/platform-orchestrator/docs/integration-and-extensions/drivers/generic-drivers/terraform-runner/), and [Terraform and OpenTofu Container Runner](https://developer.humanitec.com/platform-orchestrator/docs/integration-and-extensions/drivers/generic-drivers/terraform-and-opentofu-container-runner/) Drivers.
+
+The module is based on [Workload Identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview) being set up for the target AKS cluster. This is the recommended setup for your runners. If you are not using Workload Identity, use the [generic runner cluster module](https://github.com/humanitec-tf-modules/k8s-runner-cluster) instead.
+
+## Usage
+
+### Common usage: Runner cluster is also an Operator cluster
+
+When the runner cluster is also an Operator cluster, you can use all defaults and provide just the essential properties. This configuration creates the Kubernetes namespace, roles, and service account, as well as the Azure managed identity and credential for runner Workload Identity.
+
+```hcl
+module "my_aks_runner_cluster" {
+  source = "github.com/humanitec-tf-modules/k8s-runner-cluster-aks?ref=vX.Y.Z"
+  providers = {
+    kubernetes = kubernetes
+  }
+
+  aks_oidc_issuer_url                  = azurerm_kubernetes_cluster.my_aks_cluster.oidc_issuer_url
+  managed_identity_resource_group_name = azurerm_resource_group.my_group.name
+}
+```
+
+### Assign roles to the runner identity
+
+Use the `managed_identity_object_id` output of the present module to assign Azure roles to the runner identity.
+
+```hcl
+resource "azurerm_role_assignment" "cloud_account_mi_storage_account_contributor" {
+  principal_id         = module.my_aks_runner_cluster.managed_identity_object_id
+  scope                = azurerm_resource_group.some-group.id
+  role_definition_name = "Storage Account Contributor"
+}
+```
+
+### Annotate the Kubernetes service account and tag the Azure managed identity
+
+```hcl
+module "my_aks_runner_cluster" {
+  source = "github.com/humanitec-tf-modules/k8s-runner-cluster-aks?ref=vX.Y.Z"
+  providers = {
+    kubernetes = kubernetes
+  }
+
+  aks_oidc_issuer_url                  = azurerm_kubernetes_cluster.my_aks_cluster.oidc_issuer_url
+  managed_identity_resource_group_name = azurerm_resource_group.my_group.name
+
+  runner_serviceaccount_annotations = {
+    "annotation1" = "value1"
+    "annotation2" = "value2"
+  }
+  managed_identity_tags = {
+    "tag1" = "value1"
+    "tag2" = "value2"
+  }
+}
+```
+
+### Bring your own managed identity
+
+This configuration sets up your own Azure managed identity as the runner identity.
+
+```hcl
+module "my_aks_runner_cluster" {
+  source = "github.com/humanitec-tf-modules/k8s-runner-cluster-aks?ref=vX.Y.Z"
+  providers = {
+    kubernetes = kubernetes
+  }
+
+  aks_oidc_issuer_url = azurerm_kubernetes_cluster.my_aks_cluster.oidc_issuer_url
+
+  managed_identity_create = false
+  managed_identity_id     = azurerm_user_assigned_identity.my_own_runner_identity.id
+}
+```
+
+### Set up a separate runner cluster
+
+This configuration sets up the required permissions on the Kubernetes cluster to be a separate runner cluster.
+
+```hcl
+module "my_aks_runner_cluster" {
+  source = "github.com/humanitec-tf-modules/k8s-runner-cluster-aks?ref=vX.Y.Z"
+  providers = {
+    kubernetes = kubernetes
+  }
+
+  aks_oidc_issuer_url                  = azurerm_kubernetes_cluster.my_aks_cluster.oidc_issuer_url
+  managed_identity_resource_group_name = azurerm_resource_group.my_group.name
+
+  is_separate_runner_cluster = true
+  separate_runner_cluster_subjects = [
+    {
+      kind      = "User"
+      name      = "my-user"
+      api_group = "rbac.authorization.k8s.io"
+    },
+  ]
+}
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
