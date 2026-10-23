@@ -31,7 +31,8 @@ output "managed_identity_id" {
   description = "Resource ID of the managed identity used by the runner"
 }
 output "managed_identity_name" {
-  value       = local.managed_identity_name
+  # Read the name from the identity rather than local.managed_identity_name so callers depend on the identity existing
+  value       = var.managed_identity_create ? azurerm_user_assigned_identity.runner_identity[0].name : data.azurerm_user_assigned_identity.runner_identity[0].name
   description = "Name of the managed identity used by the runner"
 }
 output "managed_identity_client_id" {
