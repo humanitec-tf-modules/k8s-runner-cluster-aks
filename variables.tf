@@ -1,5 +1,5 @@
 variable "runner_namespace" {
-  description = "Name of the Kubernetes namespacefor the runner."
+  description = "Name of the Kubernetes namespace for the runner."
   type        = string
   nullable    = false
   default     = "humanitec-runner"
