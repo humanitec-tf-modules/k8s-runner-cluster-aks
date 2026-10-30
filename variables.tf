@@ -69,7 +69,7 @@ variable "managed_identity_name" {
 
   validation {
     condition     = var.managed_identity_create || var.managed_identity_name == null
-    error_message = "managed_identity_name must not be set if managed_identity_create is false. Use managed_identity_id to pass in an existing managed identity"
+    error_message = "managed_identity_name must not be set if managed_identity_create is false. Use managed_identity_id to pass in an existing managed identity."
   }
 }
 variable "managed_identity_resource_group_name" {
@@ -85,7 +85,7 @@ variable "managed_identity_resource_group_name" {
 }
 variable "managed_identity_location" {
   type        = string
-  description = "The Azure region to create the managed identity in, e.g. `westeurope`. If not set, the module uses the location of the resource group `managed_identity_resource_group_name`. Only used if `managed_identity_create` is `true`"
+  description = "The Azure region to create the managed identity in, e.g. `westeurope`. If not set, the module uses the location of the resource group `managed_identity_resource_group_name`. Only used if `managed_identity_create` is `true`."
   nullable    = true
   default     = null
 
@@ -96,7 +96,7 @@ variable "managed_identity_location" {
 }
 variable "managed_identity_tags" {
   type        = map(string)
-  description = "Tags to assign to the managed identity created by the module. Only used if `managed_identity_create` is `true`"
+  description = "Tags to assign to the managed identity created by the module. Only used if `managed_identity_create` is `true`."
   nullable    = true
   default     = null
 
@@ -107,7 +107,7 @@ variable "managed_identity_tags" {
 }
 variable "managed_identity_id" {
   type        = string
-  description = "The resource ID of an existing user-assigned managed identity to be used by the runner. It must be located in the subscription of the `azurerm` provider that is passed in to the module. The module reads the identity to obtain its client ID and tenant ID. Required if `managed_identity_create` is `false`, must not be set otherwise"
+  description = "The resource ID of an existing user-assigned managed identity to be used by the runner. It must be located in the subscription of the `azurerm` provider that is passed in to the module. The module reads the identity to obtain its client ID and tenant ID. Required if `managed_identity_create` is `false`, must not be set otherwise."
   nullable    = true
   default     = null
 
@@ -123,7 +123,7 @@ variable "managed_identity_id" {
 }
 variable "federated_identity_credential_create" {
   type        = bool
-  description = "Whether to create the federated identity credential trusting the AKS OIDC provider on the managed identity. Set to `false` if you manage the credential yourself. Use the `federated_identity_credential` output to configure it"
+  description = "Whether to create the federated identity credential trusting the AKS OIDC provider on the managed identity. Set to `false` if you manage the credential yourself. Use the `federated_identity_credential` output to configure it."
   nullable    = false
   default     = true
 }
