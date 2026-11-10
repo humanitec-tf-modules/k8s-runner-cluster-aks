@@ -160,7 +160,7 @@ module "my_aks_runner_cluster" {
 | Name | Description |
 |------|-------------|
 | <a name="output_azure_tenant_id"></a> [azure\_tenant\_id](#output\_azure\_tenant\_id) | ID of the Azure tenant of the managed identity. |
-| <a name="output_federated_identity_credential"></a> [federated\_identity\_credential](#output\_federated\_identity\_credential) | Issuer, subject, and audience of the federated identity credential allowing the Cloud Account to use the managed identity. If `federated_identity_credential_create` is `false`, configure a credential with these values on the managed identity yourself. |
+| <a name="output_federated_identity_credential"></a> [federated\_identity\_credential](#output\_federated\_identity\_credential) | Issuer, subject, and audience of the federated identity credential allowing the runner service account to use the managed identity. If `federated_identity_credential_create` is `false`, configure a credential with these values on the managed identity yourself. |
 | <a name="output_federated_identity_credential_id"></a> [federated\_identity\_credential\_id](#output\_federated\_identity\_credential\_id) | Resource ID of the federated identity credential created by the module, or `null` if `federated_identity_credential_create` is `false`. |
 | <a name="output_managed_identity_client_id"></a> [managed\_identity\_client\_id](#output\_managed\_identity\_client\_id) | Client ID of the managed identity used by the runner. |
 | <a name="output_managed_identity_id"></a> [managed\_identity\_id](#output\_managed\_identity\_id) | Resource ID of the managed identity used by the runner. |
