@@ -53,5 +53,5 @@ output "federated_identity_credential_id" {
 }
 output "federated_identity_credential" {
   value       = local.federated_credential
-  description = "Issuer, subject, and audience of the federated identity credential allowing the Cloud Account to use the managed identity. If `federated_identity_credential_create` is `false`, configure a credential with these values on the managed identity yourself."
+  description = "Issuer, subject, and audience of the federated identity credential allowing the runner service account to use the managed identity. If `federated_identity_credential_create` is `false`, configure a credential with these values on the managed identity yourself."
 }
