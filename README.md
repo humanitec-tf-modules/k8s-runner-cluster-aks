@@ -40,9 +40,9 @@ module "my_aks_runner_cluster" {
 Use the `managed_identity_object_id` output of the present module to assign Azure roles to the runner identity.
 
 ```hcl
-resource "azurerm_role_assignment" "cloud_account_mi_storage_account_contributor" {
+resource "azurerm_role_assignment" "runner_storage_account_contributor" {
   principal_id         = module.my_aks_runner_cluster.managed_identity_object_id
-  scope                = azurerm_resource_group.some-group.id
+  scope                = azurerm_resource_group.my_group.id
   role_definition_name = "Storage Account Contributor"
 }
 ```
