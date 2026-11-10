@@ -46,7 +46,7 @@ locals {
     substr(local.managed_identity_name, 0, local.managed_identity_name_max_length)
   )
 
-  # Federated identity credential settings for the Humanitec OIDC provider
+  # Federated identity credential settings trusting the AKS OIDC issuer for the runner service account
   federated_credential = {
     issuer   = var.aks_oidc_issuer_url
     subject  = "system:serviceaccount:${module.k8s_runner_cluster.runner_namespace}:${module.k8s_runner_cluster.runner_serviceaccount_name}"
