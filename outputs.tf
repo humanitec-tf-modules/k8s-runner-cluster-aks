@@ -27,31 +27,31 @@ output "separate_runner_cluster_rolebinding_subjects" {
   value       = module.k8s_runner_cluster.separate_runner_cluster_rolebinding_subjects
 }
 output "managed_identity_id" {
-  value       = local.managed_identity_id
   description = "Resource ID of the managed identity used by the runner."
+  value       = local.managed_identity_id
 }
 output "managed_identity_name" {
   # Read the name from the identity rather than local.managed_identity_name so callers depend on the identity existing
-  value       = var.managed_identity_create ? azurerm_user_assigned_identity.runner_identity[0].name : data.azurerm_user_assigned_identity.runner_identity[0].name
   description = "Name of the managed identity used by the runner."
+  value       = var.managed_identity_create ? azurerm_user_assigned_identity.runner_identity[0].name : data.azurerm_user_assigned_identity.runner_identity[0].name
 }
 output "managed_identity_client_id" {
-  value       = local.managed_identity_client_id
   description = "Client ID of the managed identity used by the runner."
+  value       = local.managed_identity_client_id
 }
 output "managed_identity_object_id" {
-  value       = local.managed_identity_object_id
   description = "Object ID (principal ID) of the managed identity used by the runner, i.e. the object ID of its service principal in Microsoft Entra ID. Use it as the principal ID to assign Azure roles to the identity."
+  value       = local.managed_identity_object_id
 }
 output "azure_tenant_id" {
-  value       = local.managed_identity_tenant_id
   description = "ID of the Azure tenant of the managed identity."
+  value       = local.managed_identity_tenant_id
 }
 output "federated_identity_credential_id" {
-  value       = one(azurerm_federated_identity_credential.runner_identity[*].id)
   description = "Resource ID of the federated identity credential created by the module, or `null` if `federated_identity_credential_create` is `false`."
+  value       = one(azurerm_federated_identity_credential.runner_identity[*].id)
 }
 output "federated_identity_credential" {
-  value       = local.federated_credential
   description = "Issuer, subject, and audience of the federated identity credential allowing the runner service account to use the managed identity. If `federated_identity_credential_create` is `false`, configure a credential with these values on the managed identity yourself."
+  value       = local.federated_credential
 }
