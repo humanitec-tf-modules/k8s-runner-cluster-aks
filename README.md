@@ -5,7 +5,16 @@ This repository contains an OpenTofu/Terraform module to set up an Azure Kuberne
 > [!NOTE]
 > The module does not support the setup of the non-built-in Drivers, including the [Container Runner](https://developer.humanitec.com/platform-orchestrator/docs/integration-and-extensions/drivers/generic-drivers/container-runner/), [Terraform Runner](https://developer.humanitec.com/platform-orchestrator/docs/integration-and-extensions/drivers/generic-drivers/terraform-runner/), and [Terraform and OpenTofu Container Runner](https://developer.humanitec.com/platform-orchestrator/docs/integration-and-extensions/drivers/generic-drivers/terraform-and-opentofu-container-runner/) Drivers.
 
-The module is based on [Workload Identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview) being set up for the target AKS cluster. This is the recommended setup for your runners. If you are not using Workload Identity, use the [generic runner cluster module](https://github.com/humanitec-tf-modules/k8s-runner-cluster) instead.
+## Workload Identity
+
+The module is based on [Workload Identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview) being set up for the target AKS cluster. This is the recommended setup for your runners.
+
+The module adds the proper `azure.workload.identity/client-id` annotation to the Kubernetes service account for the runner.
+
+> [!NOTE]
+> You need to add the `azure.workload.identity/use: "true"` label to the runner Pod via your Resource Definitions. Refer to the documentation of the Driver you are using on how to achieve this.
+
+If you are not using Workload Identity, use the [generic runner cluster module](https://github.com/humanitec-tf-modules/k8s-runner-cluster) instead.
 
 ## Usage
 
