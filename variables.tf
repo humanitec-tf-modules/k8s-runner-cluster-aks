@@ -62,10 +62,15 @@ variable "managed_identity_create" {
   default     = true
 }
 variable "managed_identity_name" {
-  description = "Name of the Azure managed identity to create for the runner. Only used if `managed_identity_create` is `true`. If not set, the module generates a name from `runner_namespace`, `runner_serviceaccount` and a random four-letter suffix, truncated to 120 characters so it can also be used as the federated identity credential name."
+  description = "Name of the Azure managed identity to create for the runner. Only used if `managed_identity_create` is `true`. If not set, the module generates a name from `runner_namespace`, `runner_serviceaccount` and a random four-letter suffix, truncated to 120 characters so it can also be used as the federated identity credential name. Must be at most 128 characters long."
   type        = string
   nullable    = true
   default     = null
+
+  validation {
+    condition     = var.managed_identity_name == null || length(var.managed_identity_name) <= 128
+    error_message = "managed_identity_name must be at most 128 characters long"
+  }
 
   validation {
     condition     = var.managed_identity_create || var.managed_identity_name == null
@@ -128,10 +133,15 @@ variable "federated_identity_credential_create" {
   default     = true
 }
 variable "federated_identity_credential_name" {
-  description = "Name of the federated identity credential for the runner Managed Identity. If not set, the name of the Managed Identity is used. Only used if `federated_identity_credential_create` is `true`."
+  description = "Name of the federated identity credential for the runner Managed Identity. If not set, the name of the Managed Identity is used, truncated to 120 characters. Only used if `federated_identity_credential_create` is `true`. Must be at most 120 characters long."
   type        = string
   nullable    = true
   default     = null
+
+  validation {
+    condition     = var.federated_identity_credential_name == null || length(var.federated_identity_credential_name) <= 120
+    error_message = "federated_identity_credential_name must be at most 120 characters long"
+  }
 
   validation {
     condition     = var.federated_identity_credential_create || var.federated_identity_credential_name == null

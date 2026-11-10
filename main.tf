@@ -39,7 +39,12 @@ locals {
   managed_identity_object_id = var.managed_identity_create ? azurerm_user_assigned_identity.runner_identity[0].principal_id : data.azurerm_user_assigned_identity.runner_identity[0].principal_id
   managed_identity_tenant_id = var.managed_identity_create ? azurerm_user_assigned_identity.runner_identity[0].tenant_id : data.azurerm_user_assigned_identity.runner_identity[0].tenant_id
 
-  federated_identity_credential_name = coalesce(var.federated_identity_credential_name, local.managed_identity_name)
+  # A name passed in or read from an existing identity may exceed the 120 character limit of
+  # federated identity credential names, so truncate it when used as the credential name.
+  federated_identity_credential_name = coalesce(
+    var.federated_identity_credential_name,
+    substr(local.managed_identity_name, 0, local.managed_identity_name_max_length)
+  )
 
   # Federated identity credential settings for the Humanitec OIDC provider
   federated_credential = {

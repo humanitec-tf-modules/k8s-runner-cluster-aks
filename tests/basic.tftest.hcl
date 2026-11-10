@@ -635,3 +635,55 @@ run "existing_identity_rejects_tags" {
 
   expect_failures = [var.managed_identity_tags]
 }
+
+run "long_custom_identity_name_is_truncated_for_credential" {
+  command = apply
+
+  variables {
+    managed_identity_name = join("", [for i in range(128) : "m"])
+  }
+
+  assert {
+    condition     = azurerm_user_assigned_identity.runner_identity[0].name == join("", [for i in range(128) : "m"])
+    error_message = "Managed Identity should use the full managed_identity_name"
+  }
+  assert {
+    condition     = azurerm_federated_identity_credential.runner_identity[0].name == join("", [for i in range(120) : "m"])
+    error_message = "Federated identity credential name should be managed_identity_name truncated to 120 characters, got ${azurerm_federated_identity_credential.runner_identity[0].name}"
+  }
+}
+
+run "long_existing_identity_name_is_truncated_for_credential" {
+  command = apply
+
+  variables {
+    managed_identity_create              = false
+    managed_identity_id                  = "/subscriptions/aaaaaaaa-0000-0000-0000-000000000000/resourceGroups/existing-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${join("", [for i in range(128) : "e"])}"
+    managed_identity_resource_group_name = null
+  }
+
+  assert {
+    condition     = azurerm_federated_identity_credential.runner_identity[0].name == join("", [for i in range(120) : "e"])
+    error_message = "Federated identity credential name should be the existing identity name truncated to 120 characters, got ${azurerm_federated_identity_credential.runner_identity[0].name}"
+  }
+}
+
+run "managed_identity_name_too_long" {
+  command = plan
+
+  variables {
+    managed_identity_name = join("", [for i in range(129) : "m"])
+  }
+
+  expect_failures = [var.managed_identity_name]
+}
+
+run "federated_identity_credential_name_too_long" {
+  command = plan
+
+  variables {
+    federated_identity_credential_name = join("", [for i in range(121) : "c"])
+  }
+
+  expect_failures = [var.federated_identity_credential_name]
+}
